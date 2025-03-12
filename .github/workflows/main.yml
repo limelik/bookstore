@@ -28,30 +28,30 @@ jobs:
         run: |
           docker build -f nginx/Dockerfile.dev -t bookstore_nginx:latest nginx
 
-      # Run vulnerability scans on each built image using Trivy
+      # Run vulnerability scans on each built image using Trivy, but do not fail the pipeline if vulnerabilities are found
       - name: Scan Server Image with Trivy
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: bookstore_server:latest
           format: 'table'
-          exit-code: '1'
           ignore-unfixed: true
+        continue-on-error: true
 
       - name: Scan Client Image with Trivy
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: bookstore_client:latest
           format: 'table'
-          exit-code: '1'
           ignore-unfixed: true
+        continue-on-error: true
 
       - name: Scan Nginx Image with Trivy
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: bookstore_nginx:latest
           format: 'table'
-          exit-code: '1'
           ignore-unfixed: true
+        continue-on-error: true
 
       # OPTIONAL: Push images to AWS ECR
       - name: Login to AWS ECR

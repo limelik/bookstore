@@ -88,9 +88,11 @@ jobs:
           docker tag bookstore_nginx:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_NGINX:latest
           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_NGINX:latest
 
-      - name: Set SSH Key Permissions
+      - name: Set up SSH key
         run: |
+          echo "${{ secrets.MY_SSH_KEY }}" > ~/.ssh/my-key-pair.pem
           chmod 600 ~/.ssh/my-key-pair.pem
+
 
       - name: Copy docker-compose.yml to EC2
         run: |

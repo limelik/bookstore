@@ -88,33 +88,31 @@ jobs:
           docker tag bookstore_nginx:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_NGINX:latest
           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_NGINX:latest
 
-      - name: Set up SSH key
+      - name: Set SSH Key Permissions
         run: |
-          echo "${{ secrets.EC2_PRIVATE_KEY }}" > my-key-pair.pem
-          chmod 600 my-key-pair.pem
-
-      - name: Install Docker Compose on EC2
-        run: |
-          ssh -i my-key-pair.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP }} \
-          "sudo apt-get update && sudo apt-get install -y curl && \
-           sudo curl -L https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose && \
-           sudo chmod +x /usr/local/bin/docker-compose"
+          chmod 600 ~/.ssh/my-key-pair.pem
 
       - name: Copy docker-compose.yml to EC2
         run: |
-          scp -i my-key-pair.pem -o StrictHostKeyChecking=no docker-compose.yml ubuntu@${{ secrets.EC2_PUBLIC_IP }}:/home/ubuntu/ || exit 1
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/my-key-pair.pem docker-compose.yml ubuntu@${{ secrets.EC2_IP }}:/home/ubuntu/
+
+      - name: Install Docker Compose on EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/my-key-pair.pem ubuntu@${{ secrets.EC2_IP }} "
+            sudo curl -L https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose &&
+            sudo chmod +x /usr/local/bin/docker-compose"
 
       - name: Authenticate Docker on EC2
         run: |
-          ssh -i my-key-pair.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP }} \
-          "aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/my-key-pair.pem ubuntu@${{ secrets.EC2_IP }} "
+            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com"
 
       - name: Pull Docker Images on EC2
         run: |
-          ssh -i my-key-pair.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP }} \
-          "cd /home/ubuntu && docker-compose pull"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/my-key-pair.pem ubuntu@${{ secrets.EC2_IP }} "
+            cd /home/ubuntu && docker-compose pull"
 
-      - name: Run Docker Compose on EC2
+      - name: Run application via docker-compose
         run: |
-          ssh -i my-key-pair.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP }} \
-          "cd /home/ubuntu && docker-compose up -d"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/my-key-pair.pem ubuntu@${{ secrets.EC2_IP }} "
+            cd /home/ubuntu && docker-compose up -d"

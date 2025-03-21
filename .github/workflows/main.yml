@@ -57,8 +57,8 @@ jobs:
 
       - name: Copy docker-compose.yml to EC2 instance
         run: |
-          scp -i my-key-pair.pem -o StrictHostKeyChecking=no docker-compose.yml ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/home/ec2-user/docker-compose.yml
+          scp -i my-key-pair.pem -o StrictHostKeyChecking=no docker-compose.yml ubuntu@${{ secrets.EC2_PUBLIC_IP }}:/home/ubuntu/docker-compose.yml
 
       - name: Run docker-compose on EC2 instance
         run: |
-          ssh -i my-key-pair.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_PUBLIC_IP }} "docker-compose -f /home/ec2-user/docker-compose.yml up -d"
+          ssh -i my-key-pair.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP }} "docker-compose -f /home/ubuntu/docker-compose.yml up -d"

@@ -15,79 +15,79 @@ jobs:
       - name: Fetch that sweet repo code
         uses: actions/checkout@v3
 
-      - name: Build Server Image
-        run: docker build -f server/Dockerfile.dev -t bookstore_server:latest server
+      # - name: Build Server Image
+      #   run: docker build -f server/Dockerfile.dev -t bookstore_server:latest server
       
-      - name: Build Client Image
-        run: docker build -f client/Dockerfile.dev -t bookstore_client:latest client
+      # - name: Build Client Image
+      #   run: docker build -f client/Dockerfile.dev -t bookstore_client:latest client
       
-      - name: Build Nginx Image
-        run: docker build -f nginx/Dockerfile.dev -t bookstore_nginx:latest nginx
+      # - name: Build Nginx Image
+      #   run: docker build -f nginx/Dockerfile.dev -t bookstore_nginx:latest nginx
 
-      - name: Scanning Server Image (Trivy)
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: bookstore_server:latest
-          format: 'table'
-          ignore-unfixed: true
-        continue-on-error: true
+      # - name: Scanning Server Image (Trivy)
+      #   uses: aquasecurity/trivy-action@master
+      #   with:
+      #     image-ref: bookstore_server:latest
+      #     format: 'table'
+      #     ignore-unfixed: true
+      #   continue-on-error: true
 
-      - name: Scanning Client Image (Trivy)
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: bookstore_client:latest
-          format: 'table'
-          ignore-unfixed: true
-        continue-on-error: true
+      # - name: Scanning Client Image (Trivy)
+      #   uses: aquasecurity/trivy-action@master
+      #   with:
+      #     image-ref: bookstore_client:latest
+      #     format: 'table'
+      #     ignore-unfixed: true
+      #   continue-on-error: true
 
-      - name: Scanning Nginx Image (Trivy)
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: bookstore_nginx:latest
-          format: 'table'
-          ignore-unfixed: true
-        continue-on-error: true
+      # - name: Scanning Nginx Image (Trivy)
+      #   uses: aquasecurity/trivy-action@master
+      #   with:
+      #     image-ref: bookstore_nginx:latest
+      #     format: 'table'
+      #     ignore-unfixed: true
+      #   continue-on-error: true
 
-      - name: Setting Up AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+      # - name: Setting Up AWS Credentials
+      #   uses: aws-actions/configure-aws-credentials@v2
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+      #     aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Logging into AWS ECR
-        env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-        run: |
-          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+      # - name: Logging into AWS ECR
+      #   env:
+      #     AWS_REGION: ${{ secrets.AWS_REGION }}
+      #     AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      #   run: |
+      #     aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
-      - name: Tag & Push Server Image
-        env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-          ECR_REPOSITORY_SERVER: ${{ secrets.ECR_REPOSITORY_SERVER }}
-        run: |
-          docker tag bookstore_server:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_SERVER:latest
-          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_SERVER:latest
+      # - name: Tag & Push Server Image
+      #   env:
+      #     AWS_REGION: ${{ secrets.AWS_REGION }}
+      #     AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      #     ECR_REPOSITORY_SERVER: ${{ secrets.ECR_REPOSITORY_SERVER }}
+      #   run: |
+      #     docker tag bookstore_server:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_SERVER:latest
+      #     docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_SERVER:latest
 
-      - name: Tag & Push Client Image
-        env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-          ECR_REPOSITORY_CLIENT: ${{ secrets.ECR_REPOSITORY_CLIENT }}
-        run: |
-          docker tag bookstore_client:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_CLIENT:latest
-          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_CLIENT:latest
+      # - name: Tag & Push Client Image
+      #   env:
+      #     AWS_REGION: ${{ secrets.AWS_REGION }}
+      #     AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      #     ECR_REPOSITORY_CLIENT: ${{ secrets.ECR_REPOSITORY_CLIENT }}
+      #   run: |
+      #     docker tag bookstore_client:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_CLIENT:latest
+      #     docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_CLIENT:latest
 
-      - name: Tag & Push Nginx Image
-        env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-          ECR_REPOSITORY_NGINX: ${{ secrets.ECR_REPOSITORY_NGINX }}
-        run: |
-          docker tag bookstore_nginx:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_NGINX:latest
-          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_NGINX:latest
+      # - name: Tag & Push Nginx Image
+      #   env:
+      #     AWS_REGION: ${{ secrets.AWS_REGION }}
+      #     AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      #     ECR_REPOSITORY_NGINX: ${{ secrets.ECR_REPOSITORY_NGINX }}
+      #   run: |
+      #     docker tag bookstore_nginx:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_NGINX:latest
+      #     docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_NGINX:latest
 
       - name: Copy files to EC2
         uses: appleboy/scp-action@v0.1.7
@@ -99,6 +99,17 @@ jobs:
           source: "docker-compose.yml,./server,./nginx,./client,./migrations"
           target: /home/ubuntu/app/
 
+      - name: Install AWS CLI on EC2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_PUBLIC_IP }}
+          username: ubuntu
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          port: 22
+          script: |
+            sudo apt-get update
+            sudo apt-get install -y awscli
+
       - name: Deploy on EC2
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -107,8 +118,11 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           port: 22
           script: |
-            cd /home/ubuntu/app
+            # Authenticate Docker with ECR
             aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
+            # Pull and start the application
+            cd /home/ubuntu/app
             docker compose down
             docker compose pull
             docker compose up -d

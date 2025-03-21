@@ -1,7 +1,7 @@
 services:
   server:
     restart: always
-    image: 495599753924.dkr.ecr.us-west-1.amazonaws.com/server:latest
+    image: 495599753924.dkr.ecr.us-west-1.amazonaws.com/bookstore-server:latest
     container_name: bookstore_server
     environment:
       - POSTGRES_URL=postgresql://postgres:postgres@db:5432/bookstore
@@ -26,7 +26,7 @@ services:
 
   client:
     restart: always
-    image: 495599753924.dkr.ecr.us-west-1.amazonaws.com/client:latest
+    image: 495599753924.dkr.ecr.us-west-1.amazonaws.com/bookstore-client:latest
     container_name: bookstore_client
     depends_on:
       - server
@@ -38,7 +38,7 @@ services:
     depends_on:
       - server
       - client
-    image: 495599753924.dkr.ecr.us-west-1.amazonaws.com/nginx:latest
+    image: 495599753924.dkr.ecr.us-west-1.amazonaws.com/bookstore-nginx:latest
     container_name: bookstore_nginx
     ports:
       - 8080:80

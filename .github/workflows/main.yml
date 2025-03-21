@@ -37,18 +37,18 @@ jobs:
 
       - name: Tag & Push Server Image
         run: |
-          docker tag bookstore_server:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY_SERVER }}:latest
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY_SERVER }}:latest
+          docker tag bookstore_server:latest 495599753924.dkr.ecr.us-west-1.amazonaws.com/bookstore-server:latest
+          docker push 495599753924.dkr.ecr.us-west-1.amazonaws.com/bookstore-server:latest
 
       - name: Tag & Push Client Image
         run: |
-          docker tag bookstore_client:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY_CLIENT }}:latest
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY_CLIENT }}:latest
+          docker tag bookstore_client:latest 495599753924.dkr.ecr.us-west-1.amazonaws.com/bookstore-client:latest
+          docker push 495599753924.dkr.ecr.us-west-1.amazonaws.com/bookstore-client:latest
 
       - name: Tag & Push Nginx Image
         run: |
-          docker tag bookstore_nginx:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY_NGINX }}:latest
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY_NGINX }}:latest
+          docker tag bookstore_nginx:latest 495599753924.dkr.ecr.us-west-1.amazonaws.com/bookstore-nginx:latest
+          docker push 495599753924.dkr.ecr.us-west-1.amazonaws.com/bookstore-nginx:latest
 
       - name: Set up SSH key
         run: |
